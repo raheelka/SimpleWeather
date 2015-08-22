@@ -44,19 +44,31 @@ class WeatherMap {
         let urlPath = "http://api.openweathermap.org/data/2.5/weather?q=\(cleanCity)"
         var data = getJSON(urlPath)
         var weatherData = parseJSON(data)
-        //TODO Check weatherData for 404 error
         return weatherData
     }
     
     func getWeather()->[String : String]{
+        //TODO Check for 404 on json. Ideally we should do nothing when a wrong city is selected
+        var weatherDict = [String: String]()
+        
         var weatherData : AnyObject = getWeatherDataFromJson()
+        
+        if let weatherCode = weatherData["cod"] as? NSNumber{
+            weatherDict["cod"] = "200"
+        }
+        else
+        {
+            return ["cod" : "404"]
+        }
+        
         let weatherArray = weatherData["weather"] as! NSArray
         
         let city: AnyObject! = weatherData["name"]
         let weatherCondition : AnyObject! = weatherArray[0]["main"]
         let weatherDescription : AnyObject! = weatherArray[0]["description"]
         
-        var weatherDict = [String: String]()
+
+        
         
         if let main: AnyObject = weatherData["main"]{
             if let temp = main["temp"] as? NSNumber{

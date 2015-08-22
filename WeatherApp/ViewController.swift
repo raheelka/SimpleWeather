@@ -22,7 +22,11 @@ class ViewController: UIViewController,UITextFieldDelegate {
             var cityWeather = WeatherMap()
             cityWeather.cityName = cityName.text
             var weatherDict : [String : String] = cityWeather.getWeather()
-            setLabels(weatherDict)
+            
+            //Only set labels on success Json
+            if weatherDict["cod"] == "200"{
+                setLabels(weatherDict)
+            }
             
         }
     }
