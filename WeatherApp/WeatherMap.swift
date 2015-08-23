@@ -21,8 +21,6 @@ extension String {
 
 class WeatherMap {
     
-    var cityName : String! = ""
-    
     
     func convertKelvinToDegrees(temp : Int) -> Int{
         return temp - 273
@@ -39,19 +37,34 @@ class WeatherMap {
         return boardsDictionary
     }
     
-    func getWeatherDataFromJson()->AnyObject{
-        var cleanCity = self.cityName.removeWhitespace()
+    func getWeatherDataFromJson(cityName : String)->AnyObject{
+        var cleanCity = cityName.removeWhitespace()
         let urlPath = "http://api.openweathermap.org/data/2.5/weather?q=\(cleanCity)"
         var data = getJSON(urlPath)
         var weatherData = parseJSON(data)
         return weatherData
     }
     
-    func getWeather()->[String : String]{
-        //TODO Check for 404 on json. Ideally we should do nothing when a wrong city is selected
-        var weatherDict = [String: String]()
+//    func getCurrentWeatherDataFromJson(lat : Int, lon : Int)->AnyObject{
+//        let urlPath = "http://api.openweathermap.org/data/2.5/weather?lat=\(lat)&lon=\(lon)"
+//        var data = getJSON(urlPath)
+//        var weatherData = parseJSON(data)
+//        return weatherData
+//    }
+    
+    func getWeather(cityName : String?, lat : Int?, lon : Int?,factory : String!)->[String : String]{
         
-        var weatherData : AnyObject = getWeatherDataFromJson()
+        var weatherDict = [String: String]()
+//        var weatherData : AnyObject!
+//        
+//        if factory == "ByCity"{
+//            weatherData = getWeatherDataFromJson(cityName!)
+//        }
+//        else if factory == "ByLatLon" {
+//            weatherData = getCurrentWeatherDataFromJson(lat!,lon: lon!)
+//            
+//        }
+        var weatherData : AnyObject = getWeatherDataFromJson(cityName!)
         
         if let weatherCode = weatherData["cod"] as? NSNumber{
             weatherDict["cod"] = "200"
@@ -66,9 +79,7 @@ class WeatherMap {
         let city: AnyObject! = weatherData["name"]
         let weatherCondition : AnyObject! = weatherArray[0]["main"]
         let weatherDescription : AnyObject! = weatherArray[0]["description"]
-        
 
-        
         
         if let main: AnyObject = weatherData["main"]{
             if let temp = main["temp"] as? NSNumber{
@@ -82,6 +93,7 @@ class WeatherMap {
         return weatherDict
         
     }
+    
 
     
 }

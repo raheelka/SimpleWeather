@@ -7,9 +7,9 @@
 //
 
 import UIKit
+import CoreLocation
 
-
-class ViewController: UIViewController,UITextFieldDelegate {
+class ViewController: UIViewController,UITextFieldDelegate, CLLocationManagerDelegate {
 
     @IBOutlet weak var cityName: UITextField!
     @IBOutlet weak var tempLabel: UILabel!
@@ -17,11 +17,12 @@ class ViewController: UIViewController,UITextFieldDelegate {
     @IBOutlet weak var weatherDescriptionLabel: UILabel!
     @IBOutlet weak var backgroundImage: UIImageView!
     
+    let locationManager = CLLocationManager()
+    
     @IBAction func calculateWeather(sender: AnyObject) {
         if !cityName.text.isEmpty{
             var cityWeather = WeatherMap()
-            cityWeather.cityName = cityName.text
-            var weatherDict : [String : String] = cityWeather.getWeather()
+            var weatherDict : [String : String] = cityWeather.getWeather(cityName.text, lat: nil, lon: nil, factory: "ByCity")
             
             //Only set labels on success Json
             if weatherDict["cod"] == "200"{
@@ -44,9 +45,22 @@ class ViewController: UIViewController,UITextFieldDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        getCurrentLocation()
     }
-
+    
+    func getCurrentLocation(){
+        self.locationManager.delegate = self
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        self.locationManager.requestWhenInUseAuthorization()
+        self.locationManager.startUpdatingLocation()
+    }
+    
+    func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
+        var locValue:CLLocationCoordinate2D = manager.location.coordinate
+        println("locations = \(Int(locValue.latitude))" + ", " + "\(Int(locValue.longitude))")
+        self.locationManager.stopUpdatingLocation()
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
