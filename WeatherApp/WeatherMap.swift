@@ -45,26 +45,25 @@ class WeatherMap {
         return weatherData
     }
     
-//    func getCurrentWeatherDataFromJson(lat : Int, lon : Int)->AnyObject{
-//        let urlPath = "http://api.openweathermap.org/data/2.5/weather?lat=\(lat)&lon=\(lon)"
-//        var data = getJSON(urlPath)
-//        var weatherData = parseJSON(data)
-//        return weatherData
-//    }
+    func getCurrentWeatherDataFromJson(lat : Int, lon : Int)->AnyObject{
+        let urlPath = "http://api.openweathermap.org/data/2.5/weather?lat=\(lat)&lon=\(lon)"
+        var data = getJSON(urlPath)
+        var weatherData = parseJSON(data)
+        return weatherData
+    }
     
     func getWeather(cityName : String?, lat : Int?, lon : Int?,factory : String!)->[String : String]{
         
         var weatherDict = [String: String]()
-//        var weatherData : AnyObject!
-//        
-//        if factory == "ByCity"{
-//            weatherData = getWeatherDataFromJson(cityName!)
-//        }
-//        else if factory == "ByLatLon" {
-//            weatherData = getCurrentWeatherDataFromJson(lat!,lon: lon!)
-//            
-//        }
-        var weatherData : AnyObject = getWeatherDataFromJson(cityName!)
+        var weatherData : NSDictionary!
+        
+        if factory == "ByCity"{
+            weatherData = getWeatherDataFromJson(cityName!) as! NSDictionary
+        }
+        else if factory == "ByLatLon" {
+            weatherData = getCurrentWeatherDataFromJson(lat!,lon: lon!) as! NSDictionary
+            
+        }
         
         if let weatherCode = weatherData["cod"] as? NSNumber{
             weatherDict["cod"] = "200"
