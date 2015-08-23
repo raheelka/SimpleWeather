@@ -17,6 +17,9 @@ class ViewController: UIViewController,UITextFieldDelegate, CLLocationManagerDel
     @IBOutlet weak var weatherDescriptionLabel: UILabel!
     @IBOutlet weak var backgroundImage: UIImageView!
     
+    var latitude : Int! = 0
+    var longitude : Int! = 0
+    
     let locationManager = CLLocationManager()
     
     @IBAction func calculateWeather(sender: AnyObject) {
@@ -32,6 +35,16 @@ class ViewController: UIViewController,UITextFieldDelegate, CLLocationManagerDel
         }
     }
     
+    @IBAction func calculateCurrentLocationWeather(sender: UIButton) {
+        getCurrentLocation()
+        var cityWeather = WeatherMap()
+        var weatherDict : [String : String] = cityWeather.getWeather(nil , lat: self.latitude, lon: self.longitude, factory: "ByLatLon")
+        
+        //Only set labels on success Json
+        if weatherDict["cod"] == "200"{
+            setLabels(weatherDict)
+        }
+    }
     
     func setLabels(weatherDict : [String : String]){
         cityLabel.text = weatherDict["city"]
@@ -50,13 +63,15 @@ class ViewController: UIViewController,UITextFieldDelegate, CLLocationManagerDel
     
     func getCurrentLocation(){
         self.locationManager.delegate = self
-        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
         self.locationManager.requestWhenInUseAuthorization()
         self.locationManager.startUpdatingLocation()
     }
     
     func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
         var locValue:CLLocationCoordinate2D = manager.location.coordinate
+        self.latitude = Int(locValue.latitude)
+        self.longitude = Int(locValue.longitude)
         println("locations = \(Int(locValue.latitude))" + ", " + "\(Int(locValue.longitude))")
         self.locationManager.stopUpdatingLocation()
     }
